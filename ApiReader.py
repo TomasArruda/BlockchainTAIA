@@ -2,37 +2,70 @@ import requests
 from requests.auth import HTTPDigestAuth
 import json
 
+jasonData = {}
+json_data = 0
+
+newAddresses = []
+inputAdresses = []
+outputAddresses = []
 
 def getAddressesALLFromTransactions(mainAddress):
-	newAddresses = []
-	address = '1C72zLBwBxzEUaZRH3BUBJUQbaZJWYysm8'
 	url = 'https://blockchain.info/rawaddr/'+mainAddress
 	response = requests.get(url)
-	print(address+'\n')
 	if(response.ok):
 		jData = json.loads(response.content)
 		transactions = jData['txs'];
+
+		jasonData[mainAddress] = {}
+		jasonData[mainAddress]['pointsTo'] = []
+		jasonData[mainAddress]['pointedBy'] = []
+
 		for key in transactions:
-			print(key['hash'])
+			isOutcome = False
+
+			TranInputsComplete = []
+			TranOutputsComplete = []
+
+			TranInputs = []
+			TranOutputs = []
+
 			inputs = key['inputs']
 			outputs = key['out']
-			print('inputs:')
+
 			for inp in inputs:
 				inputaddr = inp['prev_out']['addr'];
-				print(inputaddr)
-				if inputaddr != address:
-					newAddresses.append(inputaddr)
-			print('outputs:')
+				TranInputsComplete.append(inputaddr)
+				if inputaddr != mainAddress:
+					TranInputs.append(inputaddr)
+				else:
+					isOutcome = True
+
 			for out in outputs:
-				outputaddr = out['addr']
-				print(outputaddr)
-				if outputaddr != address:
-					newAddresses.append(outputaddr)
-			print('')
+				if 'addr' in out:
+					outputaddr = out['addr']
+					TranOutputsComplete.append(outputaddr)
+					if outputaddr != mainAddress:
+						TranOutputs.append(outputaddr)
+
+			if isOutcome:
+				jasonData[mainAddress]['pointsTo'] = jasonData[mainAddress]['pointsTo'] + TranOutputs
+			else:
+				jasonData[mainAddress]['pointedBy'] = jasonData[mainAddress]['pointedBy'] + TranInputs
+
 	else:
 	    response.raise_for_status()
-	return newAddresses
+
+	jasonData[mainAddress]['pointsTo'] = list(set(jasonData[mainAddress]['pointsTo']))
+	jasonData[mainAddress]['pointedBy'] = list(set(jasonData[mainAddress]['pointedBy']))
 
 
 
-addresses = getAddressesALLFromTransactions('1C72zLBwBxzEUaZRH3BUBJUQbaZJWYysm8')
+
+getAddressesALLFromTransactions('1AJbsFZ64EpEfS5UAjAfcUG8pH8Jn3rn1F')
+getAddressesALLFromTransactions('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa')
+
+print(jasonData)
+
+
+#	1AJbsFZ64EpEfS5UAjAfcUG8pH8Jn3rn1F
+# satoshi : 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
