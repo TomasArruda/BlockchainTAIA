@@ -3,7 +3,6 @@ from requests.auth import HTTPDigestAuth
 import json
 
 jasonData = {}
-json_data = 0
 
 newAddresses = []
 inputAdresses = []
@@ -62,9 +61,18 @@ def getAddressesALLFromTransactions(mainAddress):
 
 
 getAddressesALLFromTransactions('1AJbsFZ64EpEfS5UAjAfcUG8pH8Jn3rn1F')
-getAddressesALLFromTransactions('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa')
 
 print(jasonData)
+
+#with open('data.json', 'w') as outfile:
+#    json.dump(jasonData, outfile)
+
+#with open('data.json') as data_file:    
+#    data = json.load(data_file)
+
+#for key in data.keys():
+#	print(key)
+
 
 
 #	1AJbsFZ64EpEfS5UAjAfcUG8pH8Jn3rn1F
