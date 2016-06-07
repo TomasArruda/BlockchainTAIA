@@ -1,12 +1,12 @@
 import requests
 from requests.auth import HTTPDigestAuth
 import json
+import sys
+
+print(sys.argv[1])
+print(sys.argv[2])
 
 jasonData = {}
-
-newAddresses = []
-inputAdresses = []
-outputAddresses = []
 
 def getAddressesALLFromTransactions(mainAddress):
 	url = 'https://blockchain.info/rawaddr/'+mainAddress
@@ -58,14 +58,23 @@ def getAddressesALLFromTransactions(mainAddress):
 	jasonData[mainAddress]['pointedBy'] = list(set(jasonData[mainAddress]['pointedBy']))
 
 
+def mountJson(baseAddress, deepness):
+	if deepness > -1:
+		if baseAddress not in jasonData:
+			getAddressesALLFromTransactions(baseAddress)
+			for newAddress in jasonData[baseAddress]['pointsTo']:
+				mountJson(newAddress, deepness-1)
+			for newAddress in jasonData[baseAddress]['pointedBy']:
+				mountJson(newAddress, deepness-1)
 
 
-getAddressesALLFromTransactions('1AJbsFZ64EpEfS5UAjAfcUG8pH8Jn3rn1F')
+
+mountJson(sys.argv[1], int(sys.argv[2]))
 
 print(jasonData)
 
-#with open('data.json', 'w') as outfile:
-#    json.dump(jasonData, outfile)
+with open('data.json', 'w') as outfile:
+    json.dump(jasonData, outfile)
 
 #with open('data.json') as data_file:    
 #    data = json.load(data_file)
