@@ -3,8 +3,6 @@ from requests.auth import HTTPDigestAuth
 import json
 import sys
 
-print(sys.argv[1])
-print(sys.argv[2])
 
 jasonData = {}
 
@@ -32,12 +30,14 @@ def getAddressesALLFromTransactions(mainAddress):
 			outputs = key['out']
 
 			for inp in inputs:
-				inputaddr = inp['prev_out']['addr'];
-				TranInputsComplete.append(inputaddr)
-				if inputaddr != mainAddress:
-					TranInputs.append(inputaddr)
-				else:
-					isOutcome = True
+				if 'prev_out' in inp:		
+					if 'addr' in inp['prev_out']:
+						inputaddr = inp['prev_out']['addr']
+						TranInputsComplete.append(inputaddr)
+						if inputaddr != mainAddress:
+							TranInputs.append(inputaddr)
+						else:
+							isOutcome = True
 
 			for out in outputs:
 				if 'addr' in out:
@@ -71,7 +71,7 @@ def mountJson(baseAddress, deepness):
 
 mountJson(sys.argv[1], int(sys.argv[2]))
 
-print(jasonData)
+print("qtd de nos: "+str(len(jasonData)))
 
 with open('data.json', 'w') as outfile:
     json.dump(jasonData, outfile)
