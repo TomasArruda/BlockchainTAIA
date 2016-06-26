@@ -12,10 +12,12 @@ class Graph:
         self.json_data = None
         self.mapping = OrderedDict()
         self.teleport_matrix = None
+        self.adjacency_matrix = None
 
     def load_from_json(self, input_file='data.json'):
         data = []
         data_teleport = []
+        data_adjacecency = []
 
         with open(input_file) as data_file:
             self.json_data = json.load(data_file, object_pairs_hook=OrderedDict)
@@ -23,6 +25,7 @@ class Graph:
         for key in self.json_data:
             data.append([])
             data_teleport.append([])
+            data_adjacecency.append([])
             self.mapping[key] = i
             i += 1
 
@@ -30,12 +33,15 @@ class Graph:
             for key2 in self.mapping:
                 if key2 in self.json_data[key]['pointsTo']:
                     data[self.mapping[key]].append(1/len(self.json_data[key]['pointsTo']))
+                    data_adjacecency[self.mapping[key]] = 1
                 else:
                     data[self.mapping[key]].append(0)
+                    data_adjacecency[self.mapping[key]] = 0
                 data_teleport[self.mapping[key]].append(1)
 
         self.matrix = numpy.matrix(data)
         self.teleport_matrix = numpy.matrix(data_teleport)/len(data_teleport)
+        self.adjacency_matrix = numpy.matrix(data_adjacecency)
 
     def page_rank(self, u=0.85, output_file='pr_file.txt'):
         random_walk = self.matrix + 0
