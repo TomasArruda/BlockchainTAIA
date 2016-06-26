@@ -33,10 +33,10 @@ class Graph:
             for key2 in self.mapping:
                 if key2 in self.json_data[key]['pointsTo']:
                     data[self.mapping[key]].append(1/len(self.json_data[key]['pointsTo']))
-                    data_adjacecency[self.mapping[key]] = 1
+                    data_adjacecency[self.mapping[key]].append(1)
                 else:
                     data[self.mapping[key]].append(0)
-                    data_adjacecency[self.mapping[key]] = 0
+                    data_adjacecency[self.mapping[key]].append(0)
                 data_teleport[self.mapping[key]].append(1)
 
         self.matrix = numpy.matrix(data)
